@@ -20,6 +20,12 @@ namespace NonHateSpeechForum.Controllers
             var posts = await _postService.GetAll();
             return View("~/Views/Home/Index.cshtml", posts);
         }
+        public async Task<IActionResult> IndexProfanePosts()
+        {
+            var posts = await _postService.GetProfanePosts();
+            return View("~/Views/Home/Index.cshtml", posts);
+            //Fix View
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

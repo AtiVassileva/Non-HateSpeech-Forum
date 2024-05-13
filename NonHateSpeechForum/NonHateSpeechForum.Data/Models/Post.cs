@@ -17,5 +17,7 @@ namespace NonHateSpeechForum.Data.Models
         public string AuthorId { get; set; } = null!;
 
         public IdentityUser? Author { get; set; }
+        public bool IsFlagged { get;  set; }
+
     }
 }

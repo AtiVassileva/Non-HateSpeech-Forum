@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using NonHateSpeechForum.Data;
 using NonHateSpeechForum.Services;
 using NonHateSpeechForum.Services.Contracts;
-
+using Microsoft.ML;
+using Microsoft.Extensions.ML;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,10 +16,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddPredictionEnginePool<ModelInput, ModelOutput>()
+            .FromFile(modelName: "ProfanityModel", filePath: "path_to_your_trained_model.zip", watchForChanges: false);
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+
+
+// Inside Startup.cs or any appropriate initialization place
 
 var app = builder.Build();
 
@@ -45,5 +52,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
 
 app.Run();

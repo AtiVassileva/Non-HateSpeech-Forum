@@ -10,10 +10,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NonHateSpeechForum", "NonHa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NonHateSpeechForum.Data", "NonHateSpeechForum.Data\NonHateSpeechForum.Data.csproj", "{137457B9-08AF-4C7B-858A-4DBEA33DB89F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NonHateSpeechForum.Services", "NonHateSpeechForum.Services\NonHateSpeechForum.Services.csproj", "{C8C83917-4CE2-443B-BE93-7BD574F1642D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NonHateSpeechForum.Services", "NonHateSpeechForum.Services\NonHateSpeechForum.Services.csproj", "{C8C83917-4CE2-443B-BE93-7BD574F1642D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{137457B9-08AF-4C7B-858A-4DBEA33DB89F} = {137457B9-08AF-4C7B-858A-4DBEA33DB89F}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfanityDetectionTrainer", "ProfanityDetectionTrainer\ProfanityDetectionTrainer.csproj", "{CAB0D4CB-80BE-4255-8B2B-D97BBC000F8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C8C83917-4CE2-443B-BE93-7BD574F1642D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8C83917-4CE2-443B-BE93-7BD574F1642D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8C83917-4CE2-443B-BE93-7BD574F1642D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAB0D4CB-80BE-4255-8B2B-D97BBC000F8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAB0D4CB-80BE-4255-8B2B-D97BBC000F8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAB0D4CB-80BE-4255-8B2B-D97BBC000F8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAB0D4CB-80BE-4255-8B2B-D97BBC000F8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,10 +1,13 @@
-﻿<div class="container">
+﻿@using NonHateSpeechForum.Infrastructure
+@model IEnumerable<Post>
+
+<div class="container">
     <h3 class="text">
         Write a Post in the Forum
     </h3>
-    <form action="#">
+    <form method="post" asp-controller="Posts" asp-action="Create">
         <div class="input-data textarea">
-            <textarea rows="8" cols="80" placeholder="Share a random insight... cars, technologies, dogs, whatever."required></textarea>
+            <textarea name="content" rows="8" cols="80" placeholder="Share a random insight... cars, technologies, dogs, whatever." required></textarea>
             <br />
             <div class="underline"></div>
             <br />
@@ -22,12 +25,28 @@
         All Posts
     </h3>
     <br />
-    <div class="post">
-        <h5 class="text">gosho@abv.bg</h5>
-        <p>Apple is more than a tech company; it became a culture unto itself, a passion of most of people and the birthplace of iPhone.</p>
-    </div>
-    <div class="post">
-        <h5 class="text">gosho@abv.bg</h5>
-        <p>Apple is more than a tech company; it became a culture unto itself, a passion of most of people and the birthplace of iPhone.</p>
-    </div>
+
+    @if (Model.Any())
+    {
+        @foreach (var post in Model)
+        {
+            <div class="post">
+                <h5 class="text">@post.Author!.Email</h5>
+                <p>@post.Content</p>
+                @if (post.AuthorId == User.GetId())
+                {
+                    <a class="btn btn-danger" asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id">Delete</a>
+                    <br />
+                    <br />
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="post">
+            <h5 class="text">No posts yet.</h5>
+            <p>Be the first to create one!</p>
+        </div>
+    }
 </div>

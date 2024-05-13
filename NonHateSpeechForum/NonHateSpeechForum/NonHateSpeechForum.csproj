@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NonHateSpeechForum.Data\NonHateSpeechForum.Data.csproj" />
+    <ProjectReference Include="..\NonHateSpeechForum.Services\NonHateSpeechForum.Services.csproj" />
   </ItemGroup>
 
 </Project>

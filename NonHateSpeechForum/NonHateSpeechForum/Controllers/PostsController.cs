@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NonHateSpeechForum.Data;
+using NonHateSpeechForum.Data.Models;
+using NonHateSpeechForum.Infrastructure;
 
 namespace NonHateSpeechForum.Controllers
 {
@@ -22,32 +24,23 @@ namespace NonHateSpeechForum.Controllers
 
             return View("~/Views/Home/Index.cshtml", posts);
         }
-        
-        public ActionResult Create()
-        {
-            return View();
-        }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(string content)
         {
-            try
+            var authorId = User.GetId();
+            var newPost = new Post
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+                AuthorId = authorId,
+                Content = content
+            };
+
+            await _context.Posts.AddAsync(newPost);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
         
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PostsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)

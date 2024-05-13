@@ -4,9 +4,9 @@
     <h3 class="text">
         Write a Post in the Forum
     </h3>
-    <form action="#">
+    <form method="post" asp-controller="Posts" asp-action="Create">
         <div class="input-data textarea">
-            <textarea rows="8" cols="80" placeholder="Share a random insight... cars, technologies, dogs, whatever."required></textarea>
+            <textarea name="content" rows="8" cols="80" placeholder="Share a random insight... cars, technologies, dogs, whatever."required></textarea>
             <br />
             <div class="underline"></div>
             <br />

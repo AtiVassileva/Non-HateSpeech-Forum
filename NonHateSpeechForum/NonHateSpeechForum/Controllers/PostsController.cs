@@ -1,12 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NonHateSpeechForum.Data;
 
 namespace NonHateSpeechForum.Controllers
 {
     public class PostsController : Controller
     {
-        public ActionResult Index()
+        private readonly ApplicationDbContext _context;
+
+        public PostsController(ApplicationDbContext context)
         {
-            return View();
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var posts = await _context
+                .Posts
+                .Include(p => p.Author)
+                .ToListAsync();
+
+            return View("~/Views/Home/Index.cshtml", posts);
         }
         
         public ActionResult Create()

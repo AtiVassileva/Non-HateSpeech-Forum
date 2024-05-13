@@ -1,27 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NonHateSpeechForum.Data;
-using NonHateSpeechForum.Data.Models;
 using NonHateSpeechForum.Infrastructure;
+using NonHateSpeechForum.Services.Contracts;
 
 namespace NonHateSpeechForum.Controllers
 {
     public class PostsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ILogger<PostsController> _logger;
+        private readonly IPostService _postService;
 
-        public PostsController(ApplicationDbContext context)
+        public PostsController(IPostService postService, ILogger<PostsController> logger)
         {
-            _context = context;
+            _postService = postService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            var posts = await _context
-                .Posts
-                .Include(p => p.Author)
-                .ToListAsync();
-
+            var posts = await _postService.GetAll();
             return View("~/Views/Home/Index.cshtml", posts);
         }
 
@@ -29,31 +25,31 @@ namespace NonHateSpeechForum.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string content)
         {
-            var authorId = User.GetId();
-            var newPost = new Post
+            try
             {
-                AuthorId = authorId,
-                Content = content
-            };
+                await _postService.Create(User.GetId(), content);
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"An unexpected error occurred: {e.Message}");
+                return BadRequest();
+            }
 
-            await _context.Posts.AddAsync(newPost);
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         
         public async Task<IActionResult> Delete(Guid id)
         {
-            var post = await _context
-                .Posts
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (post == null)
+            try
             {
-                return NotFound();
+                await _postService.Delete(id);
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"An unexpected error occurred: {e.Message}");
+                return BadRequest();
             }
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

@@ -11,6 +11,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NonHateSpeechForum.Data", "NonHateSpeechForum.Data\NonHateSpeechForum.Data.csproj", "{137457B9-08AF-4C7B-858A-4DBEA33DB89F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NonHateSpeechForum.Services", "NonHateSpeechForum.Services\NonHateSpeechForum.Services.csproj", "{C8C83917-4CE2-443B-BE93-7BD574F1642D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{137457B9-08AF-4C7B-858A-4DBEA33DB89F} = {137457B9-08AF-4C7B-858A-4DBEA33DB89F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

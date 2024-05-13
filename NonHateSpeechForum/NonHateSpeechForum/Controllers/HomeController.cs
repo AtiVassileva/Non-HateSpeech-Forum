@@ -15,12 +15,7 @@ namespace NonHateSpeechForum.Controllers
 
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
+            return User.Identity!.IsAuthenticated ? View(nameof(Index)) : View("Guest");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

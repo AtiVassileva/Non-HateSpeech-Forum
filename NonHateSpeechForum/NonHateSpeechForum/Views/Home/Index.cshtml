@@ -1,8 +1,33 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+﻿<div class="container">
+    <h3 class="text">
+        Write a Post in the Forum
+    </h3>
+    <form action="#">
+        <div class="input-data textarea">
+            <textarea rows="8" cols="80" placeholder="Share a random insight... cars, technologies, dogs, whatever."required></textarea>
+            <br />
+            <div class="underline"></div>
+            <br />
+            <div class="form-row submit-btn">
+                <div class="input-data">
+                    <div class="inner"></div>
+                    <input type="submit" value="Submit">
+                </div>
+            </div>
+        </div>
+    </form>
+    <br />
+    <br />
+    <h3 class="text">
+        All Posts
+    </h3>
+    <br />
+    <div class="post">
+        <h5 class="text">gosho@abv.bg</h5>
+        <p>Apple is more than a tech company; it became a culture unto itself, a passion of most of people and the birthplace of iPhone.</p>
+    </div>
+    <div class="post">
+        <h5 class="text">gosho@abv.bg</h5>
+        <p>Apple is more than a tech company; it became a culture unto itself, a passion of most of people and the birthplace of iPhone.</p>
+    </div>
 </div>

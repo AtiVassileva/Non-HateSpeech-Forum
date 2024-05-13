@@ -41,18 +41,20 @@ namespace NonHateSpeechForum.Controllers
             return RedirectToAction(nameof(Index));
         }
         
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            try
+            var post = await _context
+                .Posts
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (post == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

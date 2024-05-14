@@ -13,9 +13,10 @@ namespace NonHateSpeechForum.Services
         private readonly ApplicationDbContext _context;
         private readonly PredictionEnginePool<ModelInput, ModelOutput> _predictionEngine;
 
-        public PostService(ApplicationDbContext context)
+        public PostService(ApplicationDbContext context, PredictionEnginePool<ModelInput, ModelOutput> predictionEngine)
         {
             _context = context;
+            _predictionEngine = predictionEngine;
         }
 
         public async Task<IEnumerable<Post>> GetAll()
@@ -27,17 +28,13 @@ namespace NonHateSpeechForum.Services
 
             return posts;
         }
+
         public async Task<IEnumerable<Post>> GetProfanePosts()
         {
             var posts = await _context.Posts.Where(p=>p.IsFlagged).ToListAsync();
             return posts;
         }
-        private bool ContainsProfanity(string content)
-        {
-            var input = new ModelInput { Content = content };
-            var prediction = _predictionEngine.Predict("ProfanityModel", input);
-            return prediction.IsProfane;
-        }
+        
         public async Task<bool> Create(string authorId, string content)
         {
             bool isProfane = ContainsProfanity(content);
@@ -69,6 +66,11 @@ namespace NonHateSpeechForum.Services
             return true;
         }
 
-
+        private bool ContainsProfanity(string content)
+        {
+            var input = new ModelInput { Content = content };
+            var prediction = _predictionEngine.Predict("ProfanityModel", input);
+            return prediction.IsProfane;
+        }
     }
 }

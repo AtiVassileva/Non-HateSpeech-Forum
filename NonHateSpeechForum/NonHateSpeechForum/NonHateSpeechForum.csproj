@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NonHateSpeechForum.Data\NonHateSpeechForum.Data.csproj" />
     <ProjectReference Include="..\NonHateSpeechForum.Services\NonHateSpeechForum.Services.csproj" />
+    <ProjectReference Include="..\ProfanityDetectionTrainer\ProfanityDetectionTrainer.csproj" />
   </ItemGroup>
 
 </Project>

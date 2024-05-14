@@ -10,7 +10,7 @@ namespace ProfanityDetectionTrainer
     public class ProfanityData
     {
         [LoadColumn(0)]
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         [LoadColumn(1), ColumnName("Label")]
         public bool IsProfane { get; set; }

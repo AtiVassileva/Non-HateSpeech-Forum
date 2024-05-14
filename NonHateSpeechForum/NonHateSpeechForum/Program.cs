@@ -5,6 +5,8 @@ using NonHateSpeechForum.Services;
 using NonHateSpeechForum.Services.Contracts;
 using Microsoft.ML;
 using Microsoft.Extensions.ML;
+using NonHateSpeechForum.Data.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

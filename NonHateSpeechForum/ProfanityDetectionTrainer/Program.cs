@@ -19,6 +19,15 @@ namespace ProfanityDetectionTrainer
                 separatorChar: '\t',
                 hasHeader: true);
 
+            // Check if there are any positive instances in the data
+            var positiveCount = mlContext.Data.CreateEnumerable<ProfanityData>(data, reuseRowObject: false).Count(d => d.IsProfane == false);
+            var negativeCount = mlContext.Data.CreateEnumerable<ProfanityData>(data, reuseRowObject: false).Count(d => d.IsProfane == true);
+
+            if (positiveCount == 0)
+            {
+                Console.WriteLine("Training and evaluation cannot be performed because there are no positive instances in the data.");
+                return;
+            }
             // Define the pipeline
             var pipeline = mlContext.Transforms.Text.FeaturizeText("Features", nameof(ProfanityData.Text))
                 .Append(mlContext.BinaryClassification.Trainers.SdcaLogisticRegression());

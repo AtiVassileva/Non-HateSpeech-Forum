@@ -1,6 +1,4 @@
-﻿using Microsoft.ML.Data;
-public class ModelInput
+﻿public class ModelInput
 {
-    [ColumnName("Text")]
-    public string? Content { get; set; }
+    public string Text { get; set; }
 }

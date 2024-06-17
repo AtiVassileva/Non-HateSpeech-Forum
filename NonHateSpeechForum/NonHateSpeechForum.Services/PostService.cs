@@ -81,7 +81,7 @@ namespace NonHateSpeechForum.Services
 
         private bool ContainsProfanity(string content)
         {
-            var input = new ModelInput { Content = content };
+            var input = new ModelInput { Text = content };
             var prediction = _predictionEngine.Predict(input);
             return prediction.IsProfane;
         }

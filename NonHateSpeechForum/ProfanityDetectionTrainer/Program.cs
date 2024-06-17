@@ -1,50 +1,89 @@
 ﻿using System;
-using System.Data;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 
 namespace ProfanityDetectionTrainer
 {
+    public class ModelInput
+    {
+        public string Text { get; set; }
+    }
+    public class ModelOutput
+    {
+        [ColumnName("PredictedLabel")]
+        public bool IsProfane { get; set; }
+
+        public float Score { get; set; }
+    }
+
     class Program
     {
+        private static PredictionEngine<ModelInput, ModelOutput> _predictionEngine;
+
         static void Main(string[] args)
         {
             // Create MLContext
             MLContext mlContext = new MLContext();
 
             // Load data
-            IDataView data = mlContext.Data.
-                LoadFromTextFile<ProfanityData>
-                ("C:\\Users\\Петър Тодоров\\Desktop\\project first\\Non-HateSpeech-Forum\\NonHateSpeechForum\\ProfanityDetectionTrainer\\UncensoredWords.tsv",
-                separatorChar: '\t',
-                hasHeader: true);
+            string dataPath = "C:\\Users\\Петър Тодоров\\Desktop\\project first\\Non-HateSpeech-Forum\\NonHateSpeechForum\\ProfanityDetectionTrainer\\UncensoredWords.tsv";
+            IDataView data = mlContext.Data.LoadFromTextFile<ProfanityData>(dataPath, separatorChar: '\t', hasHeader: true);
+
+            var dataEnumerable = mlContext.Data.CreateEnumerable<ProfanityData>(data, reuseRowObject: false).ToList();
 
             // Check if there are any positive instances in the data
-            var positiveCount = mlContext.Data.CreateEnumerable<ProfanityData>(data, reuseRowObject: false).Count(d => d.IsProfane == false);
-            var negativeCount = mlContext.Data.CreateEnumerable<ProfanityData>(data, reuseRowObject: false).Count(d => d.IsProfane == true);
-
-            if (positiveCount == 0)
+            var positiveCount = dataEnumerable.Count(d => !d.IsProfane);
+            var negativeCount = dataEnumerable.Count(d => d.IsProfane);
+            if (positiveCount == 0 || negativeCount == 0)
             {
-                Console.WriteLine("Training and evaluation cannot be performed because there are no positive instances in the data.");
+                Console.WriteLine("Training and evaluation cannot be performed because there are no positive or negative instances in the data.");
                 return;
             }
+
+            Console.WriteLine($"Positive instances: {positiveCount}, Negative instances: {negativeCount}");
+
             // Define the pipeline
             var pipeline = mlContext.Transforms.Text.FeaturizeText("Features", nameof(ProfanityData.Text))
-                .Append(mlContext.BinaryClassification.Trainers.SdcaLogisticRegression());
+                .Append(mlContext.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName: nameof(ProfanityData.IsProfane), featureColumnName: "Features"));
+
+            // Split data into training and testing sets
+            var trainTestData = mlContext.Data.TrainTestSplit(data, testFraction: 0.2);
+            var trainData = trainTestData.TrainSet;
+            var testData = trainTestData.TestSet;
 
             // Train the model
-            var model = pipeline.Fit(data);
+            var model = pipeline.Fit(trainData);
+
+            // Evaluate the model
+            EvaluateModel(mlContext, testData, model);
 
             // Save the model
-            mlContext.Model.Save(model, data.Schema, "C:\\Users\\Петър Тодоров\\Desktop\\project first\\Non-HateSpeech-Forum\\NonHateSpeechForum\\profanity_detection_model.zip");
+            string modelPath = "C:\\Users\\Петър Тодоров\\Desktop\\project first\\Non-HateSpeech-Forum\\NonHateSpeechForum\\profanity_detection_model.zip";
+            mlContext.Model.Save(model, trainData.Schema, modelPath);
 
             Console.WriteLine("Model training completed. Model saved to profanity_detection_model.zip.");
 
-            EvaluateModel(mlContext, data, model);
+            // Load the model
+            ITransformer trainedModel;
+            using (var stream = new FileStream(modelPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                trainedModel = mlContext.Model.Load(stream, out _);
+            }
+
+            // Create prediction engine
+            _predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
+
+            // Test prediction
+            TestPrediction("You are a great person!", false);  // Expected: not profane
+            TestPrediction("faggot", true);  // Expected: profane
         }
-        static void EvaluateModel(MLContext mlContext, IDataView data, ITransformer model)
+
+        static void EvaluateModel(MLContext mlContext, IDataView testData, ITransformer model)
         {
-            var predictions = model.Transform(data);
+            var predictions = model.Transform(testData);
 
             try
             {
@@ -62,6 +101,13 @@ namespace ProfanityDetectionTrainer
                 // Optionally, handle the exception further if needed
             }
         }
-    }
 
+        static void TestPrediction(string content, bool expectedIsProfane)
+        {
+            var input = new ModelInput { Text = content };
+            var prediction = _predictionEngine.Predict(input);
+            Console.WriteLine($"Text: {content}");
+            Console.WriteLine($"Predicted Profanity: {prediction.IsProfane}, Expected: {expectedIsProfane}");
+        }
+    }
 }

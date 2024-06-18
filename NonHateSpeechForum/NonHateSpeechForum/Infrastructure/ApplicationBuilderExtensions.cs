@@ -73,13 +73,19 @@ namespace NonHateSpeechForum.Infrastructure
                 .Users
                 .FirstOrDefault(u => u.Email == "moderator@abv.bg");
 
+            var hasher = new PasswordHasher<object?>();
+
             if (moderatorUser == null)
             {
+                const string email = "moderator@abv.bg";
+
                 dbContext.Users.Add(new IdentityUser
                 {
-                    Email = "moderator@abv.bg",
-                    PasswordHash =
-                        "AQAAAAEAACcQAAAAENm/zuyLJbjsGbYpru+6l9Ix+hGVBSsW3Lof9h14KOuHqZDhXr1jqXY/z1yo7U0zHw==", // moderator1
+                    UserName = email,
+                    Email = email,
+                    NormalizedEmail = email.ToUpper(),
+                    NormalizedUserName = email.ToUpper(),
+                    PasswordHash = hasher.HashPassword(null, "moderator1"),
                     EmailConfirmed = true
                 });
 
@@ -134,12 +140,19 @@ namespace NonHateSpeechForum.Infrastructure
                 .Users
                 .FirstOrDefault(u => u.Email == "administrator@abv.bg");
 
+            var hasher = new PasswordHasher<object?>();
+
             if (administratorUser == null)
             {
+                const string email = "administrator@abv.bg";
+
                 dbContext.Users.Add(new IdentityUser
                 {
-                    Email = "administrator@abv.bg",
-                    PasswordHash = "AQAAAAEAACcQAAAAELIvAvK23pS3W47VrZrL5ZlI1E7RVkjs8cBjkc1tWvR5Pi0tctNl2/UlhK6QtwQ0mA==", // administrator1
+                    UserName = email,
+                    Email = email,
+                    NormalizedEmail = email.ToUpper(),
+                    NormalizedUserName = email.ToUpper(),
+                    PasswordHash = hasher.HashPassword(null, "administrator1"),
                     EmailConfirmed = true
                 });
 

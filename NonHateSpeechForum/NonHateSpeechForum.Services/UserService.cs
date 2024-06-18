@@ -5,6 +5,8 @@ using NonHateSpeechForum.Services.Response;
 
 namespace NonHateSpeechForum.Services
 {
+    using static Common.ErrorMessages;
+
     public class UserService : IUserService
     {
         private readonly ApplicationDbContext _context;
@@ -35,6 +37,27 @@ namespace NonHateSpeechForum.Services
             return userResponseModels;
         }
 
+        public async Task<bool> MakeRegularUser(string userId)
+        {
+            var regularUserId = await GetRoleId("Regular User");
+            await UpdateRole(userId, regularUserId);
+            return true;
+        }
+
+        public async Task<bool> MakeModerator(string userId)
+        {
+            var moderatorId = await GetRoleId("Moderator");
+            await UpdateRole(userId, moderatorId);
+            return true;
+        }
+
+        public async Task<bool> MakeAdministrator(string userId)
+        {
+            var administratorId = await GetRoleId("Administrator");
+            await UpdateRole(userId, administratorId);
+            return true;
+        }
+
         private async Task<string> GetCurrentRole(string userId)
         {
             var userRole = await _context.UserRoles
@@ -49,6 +72,26 @@ namespace NonHateSpeechForum.Services
                 .FirstAsync(r => r.Id == userRole.RoleId);
 
             return role.Name;
+        }
+
+        private async Task<string> GetRoleId(string roleName)
+        {
+            var role = await _context.Roles
+                .FirstOrDefaultAsync(r => string.Equals(r.Name, roleName, StringComparison.CurrentCultureIgnoreCase));
+
+            if (role == null)
+            {
+                throw new ArgumentNullException(NonExistingRoleErrorMessage);
+            }
+
+            return role.Id;
+        }
+
+        private async Task UpdateRole(string userId, string desiredRoleId)
+        {
+            var currentUserRole = await _context.UserRoles
+                .FirstAsync(ur => ur.UserId == userId);
+            currentUserRole.RoleId = desiredRoleId;
         }
     }
 }

@@ -1,0 +1,45 @@
+﻿@model IEnumerable<UserResponseModel>
+
+<div>
+    <h3 style="text-align: center">Review User Roles</h3>
+    <br/>
+    <br/>
+    
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Email</th>
+            <th scope="col">Current role</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <th scope="row">@user.Id</th>
+                <td>@user.Email</td>
+                <td>@user.CurrentRole</td>
+                <td>
+                    @switch (user.CurrentRole)
+                    {
+                        case "Regular User":
+                            <a asp-controller="Users" asp-action="MakeModerator" asp-route-userId="@user.Id" class="btn btn-success">Promote to Moderator</a>
+                            <a asp-controller="Users" asp-action="MakeAdmin" asp-route-userId="@user.Id" class="btn btn-success">Promote to Admin</a>
+                            break;
+                        case "Moderator":
+                            <a asp-controller="Users" asp-action="MakeAdmin" asp-route-userId="@user.Id" class="btn btn-success">Promote to Admin</a>
+                            <a asp-controller="Users" asp-action="MakeRegularUser" asp-route-userId="@user.Id" class="btn btn-danger">Demote to Regular User</a>
+                            break;
+                        case "Administrator":
+                            <a asp-controller="Users" asp-action="MakeModerator" asp-route-userId="@user.Id" class="btn btn-danger">Demote to Moderator</a>
+                            <a asp-controller="Users" asp-action="MakeRegularUser" asp-route-userId="@user.Id" class="btn btn-danger">Demote to Regular User</a>
+                            break;
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

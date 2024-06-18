@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NonHateSpeechForum.Data;
 using NonHateSpeechForum.Services.Contracts;
 using NonHateSpeechForum.Services.Response;
@@ -77,7 +78,7 @@ namespace NonHateSpeechForum.Services
         private async Task<string> GetRoleId(string roleName)
         {
             var role = await _context.Roles
-                .FirstOrDefaultAsync(r => string.Equals(r.Name, roleName, StringComparison.CurrentCultureIgnoreCase));
+                .FirstOrDefaultAsync(r => r.Name.ToLower() == roleName.ToLower());
 
             if (role == null)
             {
@@ -91,7 +92,15 @@ namespace NonHateSpeechForum.Services
         {
             var currentUserRole = await _context.UserRoles
                 .FirstAsync(ur => ur.UserId == userId);
-            currentUserRole.RoleId = desiredRoleId;
+
+            _context.UserRoles.Remove(currentUserRole);
+            await _context.SaveChangesAsync();
+
+            await _context.UserRoles.AddAsync(new IdentityUserRole<string>
+            {
+                UserId = userId, RoleId = desiredRoleId
+            });
+            await _context.SaveChangesAsync();
         }
     }
 }

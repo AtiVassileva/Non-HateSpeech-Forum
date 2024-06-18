@@ -20,7 +20,7 @@ namespace NonHateSpeechForum.Services
 
             // Load the trained model
             var mlContext = new MLContext();
-            var modelPath = "C:\\Users\\Петър Тодоров\\Desktop\\project first\\Non-HateSpeech-Forum\\NonHateSpeechForum\\profanity_detection_model.zip";
+            var modelPath = "C:\\Users\\atanasia.vasileva\\OneDrive - Scale Focus AD\\Desktop\\Non-HateSpeech-Forum\\NonHateSpeechForum\\profanity_detection_model.zip";
             ITransformer trainedModel;
             using (var stream = new FileStream(modelPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {

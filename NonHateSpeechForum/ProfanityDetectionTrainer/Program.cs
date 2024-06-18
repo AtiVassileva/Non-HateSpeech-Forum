@@ -29,7 +29,7 @@ namespace ProfanityDetectionTrainer
             MLContext mlContext = new MLContext();
 
             // Load data
-            string dataPath = "C:\\Users\\Петър Тодоров\\Desktop\\project first\\Non-HateSpeech-Forum\\NonHateSpeechForum\\ProfanityDetectionTrainer\\UncensoredWords.tsv";
+            string dataPath = "C:\\Users\\atanasia.vasileva\\OneDrive - Scale Focus AD\\Desktop\\Non-HateSpeech-Forum\\NonHateSpeechForum\\ProfanityDetectionTrainer\\UncensoredWords.tsv";
             IDataView data = mlContext.Data.LoadFromTextFile<ProfanityData>(dataPath, separatorChar: '\t', hasHeader: true);
 
             var dataEnumerable = mlContext.Data.CreateEnumerable<ProfanityData>(data, reuseRowObject: false).ToList();
@@ -61,7 +61,7 @@ namespace ProfanityDetectionTrainer
             EvaluateModel(mlContext, testData, model);
 
             // Save the model
-            string modelPath = "C:\\Users\\Петър Тодоров\\Desktop\\project first\\Non-HateSpeech-Forum\\NonHateSpeechForum\\profanity_detection_model.zip";
+            string modelPath = "C:\\Users\\atanasia.vasileva\\OneDrive - Scale Focus AD\\Desktop\\Non-HateSpeech-Forum\\NonHateSpeechForum\\profanity_detection_model.zip";
             mlContext.Model.Save(model, trainData.Schema, modelPath);
 
             Console.WriteLine("Model training completed. Model saved to profanity_detection_model.zip.");

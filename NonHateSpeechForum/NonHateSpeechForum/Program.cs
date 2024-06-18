@@ -3,13 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using NonHateSpeechForum.Data;
 using NonHateSpeechForum.Services;
 using NonHateSpeechForum.Services.Contracts;
-using Microsoft.ML;
 using Microsoft.Extensions.ML;
-using NonHateSpeechForum.Data.Models;
+using NonHateSpeechForum.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddScoped<IPostService, PostService>();
@@ -21,17 +19,22 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddPredictionEnginePool<ModelInput, ModelOutput>()
             .FromFile(modelName: "ProfanityModel", filePath: "path_to_your_trained_model.zip", watchForChanges: false);
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+    })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
 
-
-// Inside Startup.cs or any appropriate initialization place
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.PrepareDatabase();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using NonHateSpeechForum.Services.Response;
 
 namespace NonHateSpeechForum.Services.Contracts
 {
     public interface IUserService
     {
-        Task<IEnumerable<IdentityUser>> GetAll();
+        Task<IEnumerable<UserResponseModel>> GetAll();
     }
 }

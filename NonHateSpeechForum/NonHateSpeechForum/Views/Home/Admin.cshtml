@@ -1,4 +1,4 @@
-﻿@model IEnumerable<IdentityUser>
+﻿@model IEnumerable<UserResponseModel>
 
 <div>
     <h3 style="text-align: center">Review User Roles</h3>
@@ -20,10 +20,23 @@
             <tr>
                 <th scope="row">@user.Id</th>
                 <td>@user.Email</td>
-                <td>Some role</td>
+                <td>@user.CurrentRole</td>
                 <td>
-                    <a asp-controller="Posts" asp-action="Approve" asp-route-id="@user.Id" class="btn btn-success">Approve</a>
-                    <a asp-controller="Posts" asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger">Delete</a>
+                    @if (user.CurrentRole == "Regular User")
+                    {
+                        <a asp-controller="Posts" asp-action="Approve" asp-route-id="@user.Id" class="btn btn-success">Promote to Moderator</a>
+                        <a asp-controller="Posts" asp-action="Approve" asp-route-id="@user.Id" class="btn btn-success">Promote to Admin</a>
+                    }
+                    else if (user.CurrentRole == "Moderator")
+                    {
+                        <a asp-controller="Posts" asp-action="Approve" asp-route-id="@user.Id" class="btn btn-success">Promote to Admin</a>
+                        <a asp-controller="Posts" asp-action="Approve" asp-route-id="@user.Id" class="btn btn-danger">Demote to Regular User</a>
+                    }
+                    else if (user.CurrentRole == "Administrator")
+                    {
+                        <a asp-controller="Posts" asp-action="Approve" asp-route-id="@user.Id" class="btn btn-danger">Demote to Moderator</a>
+                        <a asp-controller="Posts" asp-action="Approve" asp-route-id="@user.Id" class="btn btn-danger">Demote to Regular User</a>
+                    }
                 </td>
             </tr>
         }

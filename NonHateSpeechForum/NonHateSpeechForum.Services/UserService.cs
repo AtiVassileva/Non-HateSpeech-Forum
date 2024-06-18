@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NonHateSpeechForum.Data;
 using NonHateSpeechForum.Services.Contracts;
+using NonHateSpeechForum.Services.Response;
 
 namespace NonHateSpeechForum.Services
 {
@@ -14,13 +14,41 @@ namespace NonHateSpeechForum.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<IdentityUser>> GetAll()
+        public async Task<IEnumerable<UserResponseModel>> GetAll()
         {
             var users = await _context
                 .Users
                 .ToListAsync();
 
-            return users;
+            var userResponseModels = new List<UserResponseModel>();
+
+            foreach (var user in users)
+            {
+                userResponseModels.Add(new UserResponseModel
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    CurrentRole = await GetCurrentRole(user.Id)
+                });
+            }
+
+            return userResponseModels;
+        }
+
+        private async Task<string> GetCurrentRole(string userId)
+        {
+            var userRole = await _context.UserRoles
+                .FirstOrDefaultAsync(ur => ur.UserId == userId);
+
+            if (userRole == null)
+            {
+                return "Regular User";
+            }
+
+            var role = await _context.Roles
+                .FirstAsync(r => r.Id == userRole.RoleId);
+
+            return role.Name;
         }
     }
 }

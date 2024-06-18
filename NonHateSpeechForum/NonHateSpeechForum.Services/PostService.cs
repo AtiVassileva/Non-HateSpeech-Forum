@@ -37,6 +37,7 @@ namespace NonHateSpeechForum.Services
             var posts = await _context
                 .Posts
                 .Include(p => p.Author)
+                .Where(p => !p.IsFlagged)
                 .ToListAsync();
 
             return posts;
@@ -44,13 +45,18 @@ namespace NonHateSpeechForum.Services
 
         public async Task<IEnumerable<Post>> GetProfanePosts()
         {
-            var posts = await _context.Posts.Where(p => p.IsFlagged).ToListAsync();
+            var posts = await _context.Posts
+                .Include(p => p.Author)
+                .Where(p => p.IsFlagged)
+                .ToListAsync();
+
             return posts;
         }
 
         public async Task<bool> Create(string authorId, string content)
         {
-            bool isProfane = ContainsProfanity(content);
+            var isProfane = ContainsProfanity(content);
+
             var newPost = new Post
             {
                 AuthorId = authorId,
@@ -63,7 +69,30 @@ namespace NonHateSpeechForum.Services
             return true;
         }
 
+        public async Task<bool> Approve(Guid id)
+        {
+            var post = await FindPost(id);
+            post!.IsFlagged = false;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> Delete(Guid id)
+        {
+            var post = await FindPost(id);
+
+            _context.Posts.Remove(post!);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        private bool ContainsProfanity(string content)
+        {
+            var input = new ModelInput { Text = content };
+            var prediction = _predictionEngine.Predict(input);
+            return prediction.IsProfane;
+        }
+        private async Task<Post?> FindPost(Guid id)
         {
             var post = await _context
                 .Posts
@@ -74,16 +103,7 @@ namespace NonHateSpeechForum.Services
                 throw new NullReferenceException(NonExistingPostErrorMessage);
             }
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        private bool ContainsProfanity(string content)
-        {
-            var input = new ModelInput { Text = content };
-            var prediction = _predictionEngine.Predict(input);
-            return prediction.IsProfane;
+            return post;
         }
     }
 }

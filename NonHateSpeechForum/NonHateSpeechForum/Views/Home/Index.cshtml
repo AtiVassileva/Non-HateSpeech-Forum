@@ -33,7 +33,7 @@
             <div class="post">
                 <h5 class="text">@post.Author!.Email</h5>
                 <p>@post.Content</p>
-                @if (post.AuthorId == User.GetId())
+                @if (post.AuthorId == User.GetId() || User.IsModerator())
                 {
                     <a class="btn btn-danger" asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id">Delete</a>
                     <br />

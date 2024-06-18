@@ -1,24 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NonHateSpeechForum.Data;
+using NonHateSpeechForum.Services.Contracts;
 
 namespace NonHateSpeechForum.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        private readonly IPostService _postService;
+
+        public HomeController(IPostService postService)
         {
-            _context = context;
+            _postService = postService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var posts = await _context
-                .Posts
-                .Include(p => p.Author)
-                .ToListAsync();
-
+            var posts = await _postService.GetAll();
             return User.Identity!.IsAuthenticated ? View(nameof(Index), posts) : View("Guest");
         }
     }

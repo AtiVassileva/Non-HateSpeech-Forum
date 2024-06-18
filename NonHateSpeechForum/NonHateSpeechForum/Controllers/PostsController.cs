@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML;
 using NonHateSpeechForum.Infrastructure;
 using NonHateSpeechForum.Services.Contracts;
 
 namespace NonHateSpeechForum.Controllers
 {
+    [Authorize]
     public class PostsController : Controller
     {
         private readonly ILogger<PostsController> _logger;
@@ -21,11 +23,17 @@ namespace NonHateSpeechForum.Controllers
             var posts = await _postService.GetAll();
             return View("~/Views/Home/Index.cshtml", posts);
         }
+
         public async Task<IActionResult> IndexProfanePosts()
         {
             var posts = await _postService.GetProfanePosts();
-            return View("~/Views/Home/Index.cshtml", posts);
-            //Fix View
+
+            if (!User.IsModerator())
+            {
+                return View("~/Views/Home/Index.cshtml", posts);
+            }
+
+            return View("~/Views/Posts/Profinate.cshtml", posts);
         }
 
         [HttpPost]
@@ -44,7 +52,27 @@ namespace NonHateSpeechForum.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        
+
+        public async Task<IActionResult> Approve(Guid id)
+        {
+            if (!User.IsModerator())
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                await _postService.Approve(id);
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"An unexpected error occurred: {e.Message}");
+                return BadRequest();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         public async Task<IActionResult> Delete(Guid id)
         {
             try
